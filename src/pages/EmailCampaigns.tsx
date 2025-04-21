@@ -3,6 +3,7 @@ import { Plus, Mail, Users } from 'lucide-react';
 import type { EmailCampaign } from '../types';
 import { stages } from '../config';
 
+
 export default function EmailCampaigns() {
   const [showForm, setShowForm] = useState(false);
 
