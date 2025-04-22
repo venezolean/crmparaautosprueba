@@ -11,7 +11,7 @@ import {
 } from 'recharts';
 import { format, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { metricsConfig } from '../config/index';
+import { metricsConfig } from '../config/metrics';
 import {  mockQualityData, mockActivityData, mockMetrics } from '../config/mock-data';
 import type { PerformanceMetric } from '../config/metrics';
 import AIAssistantModal from '../components/AIAssistantModal';
@@ -28,17 +28,21 @@ export default function Metrics() {
   const mockPerformanceData = {
     activity: metricsConfig.performanceMetrics.activity.map(metric => ({
       ...metric,
-      value: Math.random() * (metric.threshold * 1.5)
+      value: Math.random() * (metric.threshold * 1.5),
+      format: metric.format as "number" | "time" | "days" | "percentage"
     })),
     quality: metricsConfig.performanceMetrics.quality.map(metric => ({
       ...metric,
-      value: Math.random() * 100
+      value: Math.random() * 100,
+      format: metric.format as "number" | "time" | "days" | "percentage"
     })),
     results: metricsConfig.performanceMetrics.results.map(metric => ({
       ...metric,
-      value: Math.random() * 100
+      value: Math.random() * 100,
+      format: metric.format as "number" | "time" | "days" | "percentage"
     }))
   };
+  
 
   const getMetricStatus = (metric: PerformanceMetric) => {
     const value = metric.value || 0;
@@ -286,7 +290,7 @@ export default function Metrics() {
       {selectedTab === 'activity' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {metricsConfig.performanceMetrics.quality.map((metric) => (
+            {mockPerformanceData.activity.map((metric) => (
               <PerformanceCard key={metric.id} metric={metric} />
             ))}
           </div>
@@ -402,9 +406,18 @@ export default function Metrics() {
 }
 
 // Helper functions
-function getIconComponent(iconName: string) {
-  const icons = { Users, TrendingUp, BarChart3, Calendar };
-  return icons[iconName] || Users;
+type IconComponent = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+
+// Especificar que 'icons' puede ser indexado con una cadena y que los valores son componentes de íconos
+function getIconComponent(iconName: string): IconComponent {
+  const icons: { [key: string]: IconComponent } = {
+    Users,
+    TrendingUp,
+    BarChart3,
+    Calendar
+  };
+  
+  return icons[iconName as keyof typeof icons] || Users; // Usar 'keyof typeof icons' para asegurar que iconName es una clave válida
 }
 
 function generateResultsData() {

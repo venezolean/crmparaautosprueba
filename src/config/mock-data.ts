@@ -3,15 +3,6 @@ import { stages } from './mock-stages';
 import type { Client } from '../types';
 import { mockSellers } from './mock-sellers';
 
-
-
-
-// datos de vendedores
-
-
-
-
-
 export  const mockClients: Client[] = [
     {
       id: '1',
