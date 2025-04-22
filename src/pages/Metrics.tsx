@@ -12,9 +12,10 @@ import {
 import { format, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { metricsConfig } from '../config/metrics';
-import { mockSellers, mockQualityData, mockActivityData, mockMetrics } from '../config/mock-data';
+import {  mockQualityData, mockActivityData, mockMetrics } from '../config/mock-data';
 import type { PerformanceMetric } from '../config/metrics';
 import AIAssistantModal from '../components/AIAssistantModal';
+import { mockSellers } from '../config/mock-sellers';
 
 export default function Metrics() {
   const [timeframe, setTimeframe] = useState<string>(metricsConfig.timeframes[0].value);

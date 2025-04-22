@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Mail, Users } from 'lucide-react';
 import type { EmailCampaign } from '../types';
-import { stages } from '../config';
+import { stages } from '../config/mock-stages';
 
 
 export default function EmailCampaigns() {
