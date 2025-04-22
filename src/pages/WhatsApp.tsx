@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, MessageSquare, Users, History } from 'lucide-react';
 import type { WhatsAppFlow } from '../types';
-import { stages } from '../config';
+import { stages } from '../config/mock-stages';
 
 export default function WhatsApp() {
   const [showForm, setShowForm] = useState(false);
