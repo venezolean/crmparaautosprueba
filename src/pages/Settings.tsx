@@ -5,7 +5,12 @@ import { stages } from '../config/mock-stages';
 
 export default function Settings() {
   const [stagesList, setStagesList] = useState(stages);
-  const [newStage, setNewStage] = useState({ id: '', name: '', color: 'bg-gray-500' });
+  const [newStage, setNewStage] = useState({
+    id: '',
+    name: '',
+    color: 'bg-gray-500',
+    chartColor: '#6B7280' // un gris oscuro por defecto
+  });
   const [reasonsList, setReasonsList] = useState(reasons);
   const [newReason, setNewReason] = useState({ emoji: '', label: '', value: '' });
   const [vehiclesList, setVehiclesList] = useState(vehicles);
@@ -25,7 +30,7 @@ export default function Settings() {
     e.preventDefault();
     if (newStage.id && newStage.name) {
       setStagesList([...stagesList, newStage]);
-      setNewStage({ id: '', name: '', color: 'bg-gray-500' });
+      setNewStage({ id: '', name: '', color: 'bg-gray-500', chartColor: '#6B7280' });
     }
   };
 
@@ -109,7 +114,25 @@ export default function Settings() {
               <div className="flex space-x-2">
                 <select
                   value={newStage.color}
-                  onChange={(e) => setNewStage({ ...newStage, color: e.target.value })}
+                  onChange={(e) => {
+                    const selectedColor = e.target.value;
+                    const colorMapping: { [key: string]: string } = {
+                      'bg-yellow-500': '#F59E0B',
+                      'bg-blue-500': '#3B82F6',
+                      'bg-purple-500': '#8B5CF6',
+                      'bg-orange-500': '#F97316',
+                      'bg-green-500': '#10B981',
+                      'bg-red-500': '#EF4444',
+                      'bg-gray-500': '#6B7280'
+                    };
+                  
+                    setNewStage({
+                      ...newStage,
+                      color: selectedColor,
+                      chartColor: colorMapping[selectedColor] || '#6B7280'
+                    });
+                  }}
+                  
                   className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
                   {colorOptions.map(color => (
