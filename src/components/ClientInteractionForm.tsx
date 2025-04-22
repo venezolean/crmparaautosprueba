@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { ClientInteraction } from '../types';
-import { interactionTypes, reasons, stages, vehicles } from '../config';
+import { interactionTypes, reasons, vehicles } from '../config';
+import { stages } from '../config/mock-stages';
 
 interface Props {
   onSave: (interaction: Partial<ClientInteraction>) => void;

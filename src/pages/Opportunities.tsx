@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, ChevronRight, ChevronDown, Users, X, MoveRight, Bot } from 'lucide-react';
 import type { Opportunity, Client } from '../types';
-import { stages } from '../config';
+import { stages } from '../config/mock-stages';
 import AIAssistantModal from '../components/AIAssistantModal';
 
 const mockClients: Client[] = [

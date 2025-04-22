@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Save, X, Trash2 } from 'lucide-react';
-import { stages, interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
+import { interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
+import { stages } from '../config/mock-stages';
 
 export default function Settings() {
   const [stagesList, setStagesList] = useState(stages);
@@ -88,7 +89,7 @@ export default function Settings() {
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Etapas del Embudo</h2>
-            
+
             {/* Add Stage Form */}
             <form onSubmit={handleAddStage} className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
               <input
@@ -154,7 +155,7 @@ export default function Settings() {
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Motivos de Contacto</h2>
-            
+
             {/* Add Reason Form */}
             <form onSubmit={handleAddReason} className="mb-6 grid grid-cols-1 sm:grid-cols-4 gap-4">
               <input
@@ -216,7 +217,7 @@ export default function Settings() {
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Catálogo de Vehículos</h2>
-            
+
             {/* Add Vehicle Form */}
             <form onSubmit={handleAddVehicle} className="mb-6 flex space-x-2">
               <input
