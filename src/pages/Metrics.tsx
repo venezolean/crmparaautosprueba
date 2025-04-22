@@ -11,11 +11,12 @@ import {
 } from 'recharts';
 import { format, subMonths } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { metricsConfig } from '../config/metrics';
+import { metricsConfig } from '../config/index';
 import {  mockQualityData, mockActivityData, mockMetrics } from '../config/mock-data';
 import type { PerformanceMetric } from '../config/metrics';
 import AIAssistantModal from '../components/AIAssistantModal';
 import { mockSellers } from '../config/mock-sellers';
+
 
 export default function Metrics() {
   const [timeframe, setTimeframe] = useState<string>(metricsConfig.timeframes[0].value);
@@ -285,7 +286,7 @@ export default function Metrics() {
       {selectedTab === 'activity' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mockPerformanceData.activity.map((metric) => (
+            {metricsConfig.performanceMetrics.quality.map((metric) => (
               <PerformanceCard key={metric.id} metric={metric} />
             ))}
           </div>
