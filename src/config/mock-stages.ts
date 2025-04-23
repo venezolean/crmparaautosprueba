@@ -1,4 +1,5 @@
 import { COLORS } from './colors';
+import type { ColorKey } from './colors';
 
 
 export const stages: Stage[] = [
@@ -9,10 +10,12 @@ export const stages: Stage[] = [
     { id: 'closed', name: 'Cerradoo', color: COLORS.green.bg , chartColor: COLORS.green.hex }
   ];
 
-  export type Stage = {
-    id: string;
-    name: string;
-    color: string;
-    chartColor: string;
-  };
-  
+  type ColorValue = (typeof COLORS)[ColorKey]['bg'];
+type ChartColor = (typeof COLORS)[ColorKey]['hex'];
+
+export type Stage = {
+  id: string;
+  name: string;
+  color: ColorValue;
+  chartColor: ChartColor;
+};

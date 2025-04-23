@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useReducer,useState } from 'react';
 import { Plus, Save, X, Trash2 } from 'lucide-react';
 import { interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
-import { stages } from '../config/mock-stages';
-import { COLORS, ColorKey, colorOptions  } from '../config/colors';
-
+import { COLORS,  colorOptions  } from '../config/colors';
+import { stagesReducer } from '../config/stagesReducer';
+import { stages as initialStages } from '../config/mock-stages'; // Tus mock stages
+import type { Stage } from '../config/mock-stages';
 
 
 
 export default function Settings() {
-  const [stagesList, setStagesList] = useState(stages);
-  const [newStage, setNewStage] = useState({
+  const [stagesList, dispatch] = useReducer(stagesReducer, initialStages);
+  const [newStage, setNewStage] = useState<Stage>({
     id: '',
     name: '',
-    color: 'bg-gray-500',
-    chartColor: '#6B7280' // un gris oscuro por defecto
+    color: COLORS.gray.bg,
+    chartColor: COLORS.gray.hex // un gris oscuro por defecto
   });
   const [reasonsList, setReasonsList] = useState(reasons);
   const [newReason, setNewReason] = useState({ emoji: '', label: '', value: '' });
@@ -24,14 +25,15 @@ export default function Settings() {
   const handleAddStage = (e: React.FormEvent) => {
     e.preventDefault();
     if (newStage.id && newStage.name) {
-      setStagesList([...stagesList, newStage]);
-      setNewStage({ id: '', name: '', color: 'bg-gray-500', chartColor: '#6B7280' });
+      dispatch({ type: 'ADD_STAGE', payload: newStage });
+      setNewStage({ id: '', name: '', color: COLORS.gray.bg, chartColor: COLORS.gray.hex });
     }
   };
-
+  
   const handleDeleteStage = (id: string) => {
-    setStagesList(stagesList.filter(stage => stage.id !== id));
+    dispatch({ type: 'DELETE_STAGE', payload: id });
   };
+  
 
   const handleAddReason = (e: React.FormEvent) => {
     e.preventDefault();
