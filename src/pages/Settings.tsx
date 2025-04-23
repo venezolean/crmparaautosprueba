@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Plus, Save, X, Trash2 } from 'lucide-react';
 import { interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
 import { stages } from '../config/mock-stages';
+import { COLORS, ColorKey, colorOptions  } from '../config/colors';
+import type { Stage } from '../config/mock-stages';
+
+
 
 export default function Settings() {
   const [stagesList, setStagesList] = useState(stages);
@@ -16,15 +20,6 @@ export default function Settings() {
   const [vehiclesList, setVehiclesList] = useState(vehicles);
   const [newVehicle, setNewVehicle] = useState('');
   const [activeTab, setActiveTab] = useState('stages');
-
-  const colorOptions = [
-    { name: 'Amarillo', value: 'bg-yellow-500' },
-    { name: 'Azul', value: 'bg-blue-500' },
-    { name: 'Morado', value: 'bg-purple-500' },
-    { name: 'Naranja', value: 'bg-orange-500' },
-    { name: 'Verde', value: 'bg-green-500' },
-    { name: 'Rojo', value: 'bg-red-500' },
-  ];
 
   const handleAddStage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,33 +107,17 @@ export default function Settings() {
                 className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <div className="flex space-x-2">
-                <select
-                  value={newStage.color}
-                  onChange={(e) => {
-                    const selectedColor = e.target.value;
-                    const colorMapping: { [key: string]: string } = {
-                      'bg-yellow-500': '#F59E0B',
-                      'bg-blue-500': '#3B82F6',
-                      'bg-purple-500': '#8B5CF6',
-                      'bg-orange-500': '#F97316',
-                      'bg-green-500': '#10B981',
-                      'bg-red-500': '#EF4444',
-                      'bg-gray-500': '#6B7280'
-                    };
-                  
-                    setNewStage({
-                      ...newStage,
-                      color: selectedColor,
-                      chartColor: colorMapping[selectedColor] || '#6B7280'
-                    });
-                  }}
-                  
-                  className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                >
-                  {colorOptions.map(color => (
-                    <option key={color.value} value={color.value}>{color.name}</option>
-                  ))}
-                </select>
+                  <select
+                    value={newStage.color}
+                    onChange={(e) => {
+                      const sel = colorOptions.find(c => c.value === e.target.value)!;
+                      setNewStage({ ...newStage, color: sel.value, chartColor: sel.chartColor });
+                    }}
+                  >
+                    {colorOptions.map(c => (
+                      <option key={c.value} value={c.value}>{c.name}</option>
+                    ))}
+                  </select>
                 <button
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"

@@ -1,4 +1,6 @@
 import { stages } from './mock-stages';
+import { COLORS } from './colors';
+
 
 export const metricsConfig = {
     kpis: [
@@ -13,18 +15,18 @@ export const metricsConfig = {
       { value: 'quarter', label: '90 días' },
     ],
     channels: [
-      { name: 'Web', color: '#3B82F6' },
-      { name: 'WhatsApp', color: '#10B981' },
-      { name: 'Email', color: '#6366F1' },
-      { name: 'Llamadas', color: '#F59E0B' },
+      { name: 'Web', color: COLORS.blue.hex },
+      { name: 'WhatsApp', color: COLORS.green.hex },
+      { name: 'Email', color: COLORS.purple.hex },
+      { name: 'Llamadas', color: COLORS.yellow.hex },
     ],
     funnelStages: stages.map(stage => ({
       name: stage.name,
       color: stage.chartColor
     })),
     activityMetrics: [
-      { id: 'interactions', label: 'Interacciones', color: '#8884d8' },
-      { id: 'conversions', label: 'Conversiones', color: '#82ca9d' },
+      { id: 'interactions', label: 'Interacciones', color: COLORS.purple.hex },
+      { id: 'conversions', label: 'Conversiones', color: COLORS.green.hex },
     ],
     teamMetrics: [
       { id: 'sales', label: 'Ventas' },
