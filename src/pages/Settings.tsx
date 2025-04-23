@@ -3,7 +3,7 @@ import { Plus, Save, X, Trash2 } from 'lucide-react';
 import { interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
 import { stages } from '../config/mock-stages';
 import { COLORS, ColorKey, colorOptions  } from '../config/colors';
-import type { Stage } from '../config/mock-stages';
+
 
 
 
