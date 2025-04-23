@@ -1,8 +1,9 @@
 import React, { useReducer,useState } from 'react';
 import { Plus, Save, X, Trash2 } from 'lucide-react';
-import { interactionTypes, reasons, vehicles, preferenceOptions } from '../config';
+import { interactionTypes, Reason, vehicles, preferenceOptions } from '../config';
 import { COLORS,  colorOptions  } from '../config/colors';
 import { stagesReducer } from '../config/stagesReducer';
+import { vehiclesReducer } from '../config/vehiclesReducer';
 import { stages as initialStages } from '../config/mock-stages'; // Tus mock stages
 import type { Stage } from '../config/mock-stages';
 
@@ -16,9 +17,9 @@ export default function Settings() {
     color: COLORS.gray.bg,
     chartColor: COLORS.gray.hex // un gris oscuro por defecto
   });
-  const [reasonsList, setReasonsList] = useState(reasons);
+  const [reasonsList, setReasonsList] = useState(reason);
   const [newReason, setNewReason] = useState({ emoji: '', label: '', value: '' });
-  const [vehiclesList, setVehiclesList] = useState(vehicles);
+  const [vehicles, dispatchVehicles] = useReducer(vehiclesReducer, []);
   const [newVehicle, setNewVehicle] = useState('');
   const [activeTab, setActiveTab] = useState('stages');
 
@@ -50,14 +51,35 @@ export default function Settings() {
   const handleAddVehicle = (e: React.FormEvent) => {
     e.preventDefault();
     if (newVehicle) {
-      setVehiclesList([...vehiclesList, newVehicle]);
+      dispatchVehicles({
+        type: 'ADD_VEHICLE',
+        payload: {
+          id: '', // Este campo debe estar vacío si es necesario generar uno más tarde
+          brand: '',
+          model: '',
+          year: 0,
+          price: 0,
+          promoPrice: undefined, // Si no hay precio promocional
+          engine: '',
+          transmission: '',
+          fuelType: '',
+          power: '',
+          mileage: 0,
+          condition: '0km', // Asumiendo que el estado por defecto es 0km
+          category: '',
+          description: '',
+          images: [],
+          stock: 0, // Opcional, dependiendo de si necesitas controlar el stock
+          featured: false, // Opcional, si no es destacado
+          availableForTestDrive: false // Opcional, si no está disponible para prueba de manejo
+        }
+      });
       setNewVehicle('');
     }
   };
-
-  const handleDeleteVehicle = (vehicle: string) => {
-    setVehiclesList(vehiclesList.filter(v => v !== vehicle));
-  };
+  const handleDeleteVehicle = (vehicles: string) =>
+    dispatchVehicles({ type: 'REMOVE_VEHICLE', payload: vehicles, });
+  
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
