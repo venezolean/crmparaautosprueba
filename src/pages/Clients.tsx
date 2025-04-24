@@ -1,23 +1,17 @@
-import React, { useState } from 'react';
-import { Plus, Search, Phone, MessageSquare, MapPin, Briefcase, History, Edit2, Check, X, ChevronDown, ChevronUp, Bot } from 'lucide-react';
-import { Client } from '../types';
+import React, { useReducer } from 'react';
+import { Plus, Search, Phone, MessageSquare, MapPin, Briefcase, Edit2, Check, X, ChevronDown, ChevronUp, Bot} from 'lucide-react';
+import type { Client } from '../types';
 import ClientInteractionForm from '../components/ClientInteractionForm';
 import ClientInteractionList from '../components/ClientInteractionList';
 import { preferenceOptions } from '../config';
 import AIAssistantModal from '../components/AIAssistantModal';
-import { mockClients } from '../config/mock-data';
-import { getAISuggestions } from '../config/mock-data';
+import { mockClients, getAISuggestions, initialState } from '../config/mock-data';
+import { clientReducer } from '../config/clientReducer';
+import PreferenceSection from '../components/PreferenceSection';
 
 export default function Clients() {
-  const [showForm, setShowForm] = useState(false);
-  const [showClientDetails, setShowClientDetails] = useState<string | null>(null);
-  const [showNewInteraction, setShowNewInteraction] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [editingPreferences, setEditingPreferences] = useState(false);
-  const [tempPreferences, setTempPreferences] = useState<Client['preferences'] | null>(null);
-  const [showPreferences, setShowPreferences] = useState(true);
-  const [showInteractions, setShowInteractions] = useState(true);
-  const [showAIModal, setShowAIModal] = useState(false);
+  // <-- Mueve useReducer dentro del componente
+  const [state, dispatch] = useReducer(clientReducer, initialState);
 
   const handleCall = (phone: string) => {
     window.location.href = `tel:${phone}`;
@@ -28,79 +22,36 @@ export default function Clients() {
     window.open(`https://wa.me/${formattedPhone}`, '_blank');
   };
 
-  const selectedClient = showClientDetails 
-    ? mockClients.find(client => client.id === showClientDetails)
+  const selectedClient = state.showClientDetails
+    ? mockClients.find(c => c.id === state.showClientDetails) || null
     : null;
 
   const handleEditPreferences = () => {
     if (selectedClient) {
-      setTempPreferences(selectedClient.preferences);
-      setEditingPreferences(true);
+      dispatch({
+        type: 'START_EDITING_PREFERENCES',
+        payload: selectedClient.preferences
+      });
     }
   };
 
-  const handleSavePreferences = () => {
-    setEditingPreferences(false);
-    setTempPreferences(null);
-  };
+  const handleSavePreferences = () => dispatch({ type: 'SAVE_PREFERENCES' });
 
-  const handleCancelEdit = () => {
-    setEditingPreferences(false);
-    setTempPreferences(null);
-  };
+  const handleCancelEdit = () => dispatch({ type: 'CANCEL_EDITING_PREFERENCES' });
 
   const handleSaveInteraction = (interaction: any) => {
     console.log('New interaction:', interaction);
-    setShowNewInteraction(false);
+    dispatch({ type: 'TOGGLE_NEW_INTERACTION' });
   };
 
   const togglePreference = (category: keyof typeof preferenceOptions, value: string) => {
-    if (!tempPreferences) return;
-
-    const currentPrefs = [...(tempPreferences[category] as string[])];
-    const index = currentPrefs.indexOf(value);
-    
-    if (index === -1) {
-      currentPrefs.push(value);
-    } else {
-      currentPrefs.splice(index, 1);
-    }
-
-    setTempPreferences({
-      ...tempPreferences,
-      [category]: currentPrefs
+    dispatch({
+      type: 'TOGGLE_PREFERENCE',
+      payload: { category, value }
     });
-  };
+  }; // <-- Cerrá la función aquí
 
-  const PreferenceSection = ({ title, category, options, multiple = true }: { 
-    title: string; 
-    category: keyof typeof preferenceOptions; 
-    options: string[];
-    multiple?: boolean;
-  }) => {
-    if (!tempPreferences) return null;
 
-    return (
-      <div className="mb-4">
-        <h4 className="text-sm font-medium text-gray-700 mb-2">{title}</h4>
-        <div className="flex flex-wrap gap-2">
-          {options.map((option) => (
-            <button
-              key={option}
-              onClick={() => togglePreference(category, option)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors
-                ${(tempPreferences[category] as string[]).includes(option)
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-            >
-              {option}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="space-y-4 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -109,14 +60,15 @@ export default function Clients() {
         <h1 className="text-2xl font-bold text-gray-800">Clientes</h1>
         <div className="flex gap-2 w-full sm:w-auto">
           <button
-            onClick={() => setShowAIModal(true)}
+            onClick={() => dispatch({ type: 'TOGGLE_AI_MODAL' })}
             className="bg-blue-100 text-blue-600 px-4 py-2 rounded-lg flex items-center justify-center hover:bg-blue-200"
           >
             <Bot className="w-5 h-5 mr-2" />
             Asistente IA
           </button>
-          <button
-            onClick={() => setShowForm(true)}
+          <button 
+            onClick={() =>dispatch({ type: 'TOGGLE_FORM' })
+          }
             className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center justify-center hover:bg-blue-700"
           >
             <Plus className="w-5 h-5 mr-2" />
@@ -132,8 +84,8 @@ export default function Clients() {
           type="text"
           placeholder="Buscar clientes..."
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={state.searchTerm}
+          onChange={(e) => dispatch({ type: 'SET_SEARCH_TERM', payload: e.target.value })}
         />
       </div>
 
@@ -174,7 +126,7 @@ export default function Clients() {
                 ))}
               </div>
               <button
-                onClick={() => setShowClientDetails(client.id)}
+                onClick={() => dispatch({ type: 'SET_CLIENT_DETAILS', payload: client.id })}
                 className="w-full mt-3 text-sm text-blue-600 hover:bg-blue-50 py-2 rounded-md"
               >
                 Ver Detalles
@@ -208,7 +160,7 @@ export default function Clients() {
               <tr 
                 key={client.id} 
                 className="hover:bg-gray-50 cursor-pointer"
-                onClick={() => setShowClientDetails(client.id)}
+                onClick={() => dispatch({ type: 'SET_CLIENT_DETAILS', payload: client.id })}
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-gray-900">{client.name}</div>
@@ -259,14 +211,14 @@ export default function Clients() {
       </div>
 
       {/* Client Details Modal */}
-      {showClientDetails && selectedClient && (
+      {state.showClientDetails && selectedClient && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">{selectedClient.name}</h2>
                 <button
-                  onClick={() => setShowClientDetails(null)}
+                  onClick={() => dispatch({ type: 'SET_CLIENT_DETAILS', payload: null })}
                   className="text-gray-400 hover:text-gray-500"
                 >
                   <span className="text-2xl">&times;</span>
@@ -297,17 +249,18 @@ export default function Clients() {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <button
-                      onClick={() => setShowPreferences(!showPreferences)}
+                      onClick={() => dispatch({ type: 'TOGGLE_PREFERENCES' })}
+
                       className="flex items-center text-lg font-semibold"
                     >
                       Preferencias
-                      {showPreferences ? (
+                      {state.showPreferences ? (
                         <ChevronUp className="w-5 h-5 ml-2" />
                       ) : (
                         <ChevronDown className="w-5 h-5 ml-2" />
                       )}
                     </button>
-                    {showPreferences && !editingPreferences && (
+                    {state.showPreferences && !state.editingPreferences && (
                       <button
                         onClick={handleEditPreferences}
                         className="text-blue-600 hover:text-blue-700 flex items-center"
@@ -316,7 +269,7 @@ export default function Clients() {
                         Editar
                       </button>
                     )}
-                    {showPreferences && editingPreferences && (
+                    {state.showPreferences && state.editingPreferences && (
                       <div className="flex space-x-2">
                         <button
                           onClick={handleSavePreferences}
@@ -336,38 +289,50 @@ export default function Clients() {
                     )}
                   </div>
                   
-                  {showPreferences && (
-                    editingPreferences && tempPreferences ? (
+                  {state.showPreferences && (
+                    state.editingPreferences && state.tempPreferences ? (
                       <div className="space-y-4">
-                        <PreferenceSection 
-                          title="Tipo de vehículo" 
-                          category="vehicleType" 
-                          options={preferenceOptions.vehicleType} 
+                        <PreferenceSection
+                          title="Tipo de vehículo"
+                          category="vehicleType"
+                          options={preferenceOptions.vehicleType}
+                          selected={state.tempPreferences.vehicleType}
+                          onToggle={togglePreference}
                         />
-                        <PreferenceSection 
-                          title="Transmisión" 
-                          category="transmission" 
-                          options={preferenceOptions.transmission} 
+                        <PreferenceSection
+                          title="Transmisión"
+                          category="transmission"
+                          options={preferenceOptions.transmission}
+                          selected={state.tempPreferences.transmission}
+                          onToggle={togglePreference}
                         />
-                        <PreferenceSection 
-                          title="Combustible" 
-                          category="fuelType" 
-                          options={preferenceOptions.fuelType} 
+                        <PreferenceSection
+                          title="Combustible"
+                          category="fuelType"
+                          options={preferenceOptions.fuelType}
+                          selected={state.tempPreferences.fuelType}
+                          onToggle={togglePreference}
                         />
-                        <PreferenceSection 
-                          title="Año de interés" 
-                          category="yearRange" 
-                          options={preferenceOptions.yearRange} 
+                        <PreferenceSection
+                          title="Año de interés"
+                          category="yearRange"
+                          options={preferenceOptions.yearRange}
+                          selected={state.tempPreferences.yearRange}
+                          onToggle={togglePreference}
                         />
-                        <PreferenceSection 
-                          title="Marca preferida" 
-                          category="brand" 
-                          options={preferenceOptions.brand} 
+                        <PreferenceSection
+                          title="Marca preferida"
+                          category="brand"
+                          options={preferenceOptions.brand}
+                          selected={state.tempPreferences.brand}
+                          onToggle={togglePreference}
                         />
-                        <PreferenceSection 
-                          title="Uso del vehículo" 
-                          category="vehicleUse" 
-                          options={preferenceOptions.vehicleUse} 
+                        <PreferenceSection
+                          title="Uso del vehículo"
+                          category="vehicleUse"
+                          options={preferenceOptions.vehicleUse}
+                          selected={state.tempPreferences.vehicleUse}
+                          onToggle={togglePreference}
                         />
                       </div>
                     ) : (
@@ -407,19 +372,19 @@ export default function Clients() {
                 <div>
                   <div className="flex justify-between items-center mb-3">
                     <button
-                      onClick={() => setShowInteractions(!showInteractions)}
+                      onClick={() => dispatch({ type: 'TOGGLE_INTERACTIONS' })}
                       className="flex items-center text-lg font-semibold"
                     >
                       Historial de Interacciones
-                      {showInteractions ? (
+                      {state.showInteractions ? (
                         <ChevronUp className="w-5 h-5 ml-2" />
                       ) : (
                         <ChevronDown className="w-5 h-5 ml-2" />
                       )}
                     </button>
-                    {showInteractions && (
+                    {state.showInteractions && (
                       <button
-                        onClick={() => setShowNewInteraction(true)}
+                        onClick={() => dispatch({ type: 'TOGGLE_NEW_INTERACTION' })}
                         className="text-blue-600 hover:text-blue-700 flex items-center"
                       >
                         <Plus className="w-4 h-4 mr-1" />
@@ -428,7 +393,7 @@ export default function Clients() {
                     )}
                   </div>
                   
-                  {showInteractions && (
+                  {state.showInteractions && (
                     <ClientInteractionList interactions={selectedClient.interactions} />
                   )}
                 </div>
@@ -457,15 +422,15 @@ export default function Clients() {
       )}
 
       {/* New Interaction Modal */}
-      {showNewInteraction && (
+      {state.showNewInteraction && (
         <ClientInteractionForm
           onSave={handleSaveInteraction}
-          onClose={() => setShowNewInteraction(false)}
+          onClose={() => dispatch({ type: 'TOGGLE_NEW_INTERACTION' })}
         />
       )}
 
       {/* Client Form Modal */}
-      {showForm && (
+      {state.showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-6">
@@ -532,7 +497,7 @@ export default function Clients() {
                 <div className="flex justify-end space-x-3 mt-6">
                   <button
                     type="button"
-                    onClick={() => setShowForm(false)}
+                    onClick={() => dispatch({ type: 'TOGGLE_FORM' })}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
                   >
                     Cancelar
@@ -552,8 +517,8 @@ export default function Clients() {
 
       {/* AI Assistant Modal */}
       <AIAssistantModal
-        isOpen={showAIModal}
-        onClose={() => setShowAIModal(false)}
+        isOpen={state.showAIModal}
+        onClose={() => dispatch({ type: 'TOGGLE_AI_MODAL' })}
         suggestions={getAISuggestions()}
       />
     </div>

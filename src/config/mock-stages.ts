@@ -10,7 +10,7 @@ export const stages: Stage[] = [
     { id: 'closed', name: 'Cerradoo', color: COLORS.green.bg , chartColor: COLORS.green.hex }
   ];
 
-  type ColorValue = (typeof COLORS)[ColorKey]['bg'];
+type ColorValue = (typeof COLORS)[ColorKey]['bg'];
 type ChartColor = (typeof COLORS)[ColorKey]['hex'];
 
 export type Stage = {

@@ -64,8 +64,30 @@ export  const mockClients: Client[] = [
     }
   ];
 
+  export const initialState: {
+    showForm: boolean;
+    showClientDetails: string | null;
+    showNewInteraction: boolean;
+    searchTerm: string;
+    editingPreferences: boolean;
+    tempPreferences: Client['preferences'] | null;
+    showPreferences: boolean;
+    showInteractions: boolean;
+    showAIModal: boolean;
+  } = {
+    showForm: false,
+    showClientDetails: null,
+    showNewInteraction: false,
+    searchTerm: '',
+    editingPreferences: false,
+    tempPreferences: null,
+    showPreferences: true,
+    showInteractions: true,
+    showAIModal: false,
+  };
+  
 
-  // referente a metricas
+    // referente a metricas
 export const mockMetrics = {
   sellers: mockSellers.map(seller => ({
     id: seller.id,

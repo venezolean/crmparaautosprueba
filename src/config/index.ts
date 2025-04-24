@@ -1,5 +1,5 @@
 import { Phone, MessageSquare, Mail, Building2, Globe } from 'lucide-react';
-import { stages } from './mock-stages';
+
 
 import type { LucideIcon } from 'lucide-react';
 
@@ -21,7 +21,7 @@ export const interactionTypes = [
 export type Reason = {
   emoji: string;
   label: string;
-  value:
+  value: ''
     | 'inquiry'
     | 'financing'
     | 'vehicle'
@@ -32,7 +32,7 @@ export type Reason = {
 };
 
 
-export const Reasons = [
+export const initialReasons: Reason[] = [
   { emoji: '❓', label: 'Consulta', value: 'inquiry' },
   { emoji: '💳', label: 'Financiación', value: 'financing' },
   { emoji: '🚘', label: 'Vehículo', value: 'vehicle' },

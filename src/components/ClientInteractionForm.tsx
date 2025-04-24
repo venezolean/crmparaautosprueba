@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 import type { ClientInteraction } from '../types';
-import { interactionTypes, reasons, vehicles } from '../config';
+// Importar initialReasons y renombrar a "reasons" para mantener tu API existente
+import { interactionTypes, initialReasons as reasons, vehicles } from '../config';
 import { stages } from '../config/mock-stages';
 
 interface Props {
@@ -19,7 +20,7 @@ export default function ClientInteractionForm({ onSave, onClose }: Props) {
   });
 
   const handleTypeToggle = (value: string) => {
-    setSelectedTypes(prev => 
+    setSelectedTypes(prev =>
       prev.includes(value)
         ? prev.filter(t => t !== value)
         : [...prev, value]
@@ -75,7 +76,7 @@ export default function ClientInteractionForm({ onSave, onClose }: Props) {
               </label>
               <select
                 value={formData.reason}
-                onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                onChange={e => setFormData({ ...formData, reason: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="">Seleccionar motivo...</option>
@@ -94,15 +95,18 @@ export default function ClientInteractionForm({ onSave, onClose }: Props) {
               <input
                 type="text"
                 value={formData.vehicle}
-                onChange={(e) => setFormData({ ...formData, vehicle: e.target.value })}
+                onChange={e => setFormData({ ...formData, vehicle: e.target.value })}
                 list="vehicles"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Buscar vehículo..."
               />
               <datalist id="vehicles">
-                {vehicles.map((vehicle) => (
-                  <option key={vehicle} value={vehicle} />
-                ))}
+                {vehicles.map(v => {
+                  const label = typeof v === 'string'
+                    ? v
+                    : `${v.brand} ${v.model} - ${v.year} - ${v.engine} - ${v.transmission}`;
+                  return <option key={v.id || v.model || label} value={label} />;
+                })}
               </datalist>
             </div>
 
@@ -112,12 +116,12 @@ export default function ClientInteractionForm({ onSave, onClose }: Props) {
               </label>
               <select
                 value={formData.stage}
-                onChange={(e) => setFormData({ ...formData, stage: e.target.value })}
+                onChange={e => setFormData({ ...formData, stage: e.target.value })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               >
                 <option value="">Seleccionar etapa...</option>
-                {stages.map((stage) => (
-                  <option key={stage.id} value={stage.id}>{stage.name}</option>
+                {stages.map(({ id, name }) => (
+                  <option key={id} value={id}>{name}</option>
                 ))}
               </select>
             </div>
@@ -128,7 +132,7 @@ export default function ClientInteractionForm({ onSave, onClose }: Props) {
               </label>
               <textarea
                 value={formData.notes}
-                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                onChange={e => setFormData({ ...formData, notes: e.target.value })}
                 rows={3}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 placeholder="Detalles adicionales..."

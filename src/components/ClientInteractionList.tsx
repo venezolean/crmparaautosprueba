@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Phone, MessageSquare, Mail, Building2, Globe, ChevronRight } from 'lucide-react';
 import type { ClientInteraction } from '../types';
-import { reasons } from '../config';
+import { initialReasons } from '../config'; // 🔁 Cambiado desde Reason a initialReasons
 
 interface Props {
   interactions: ClientInteraction[];
@@ -17,8 +17,9 @@ const interactionIcons = {
   web: Globe,
 };
 
+// ✅ Corrección: usamos initialReasons en lugar del tipo Reason
 const reasonEmojis: Record<string, string> = Object.fromEntries(
-  reasons.map(({ value, emoji }) => [value, emoji])
+  initialReasons.map(({ value, emoji }) => [value, emoji])
 );
 
 export default function ClientInteractionList({ interactions }: Props) {
